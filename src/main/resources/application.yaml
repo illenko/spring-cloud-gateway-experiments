@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: demo
+
+  cloud:
+    gateway:
+      routes:
+        - id: post-purchase
+          uri: ${services.orchestrator-service.url}
+          predicates:
+            - Path=/api/v1/purchase
+            - Method=POST
+          filters:
+            - RewritePath=/api/v1/?(?<segment>.*), /$\{segment}
+        - id: get-purchase
+          uri: ${services.orchestrator-service.url}
+          predicates:
+            - Path=/api/v1/purchase/{segment}
+            - Method=GET
+          filters:
+            - RewritePath=/api/v1/?(?<segment>.*), /$\{segment}
+        - id: get-schema
+          uri: ${services.schemas-service.url}
+          predicates:
+            - Path=/api/v1/schema/{segment}
+            - Method=GET
+          filters:
+            - RewritePath=/api/v1/?(?<segment>.*), /$\{segment}
+
+
+services:
+  orchestrator-service:
+    url: http://localhost:8085
+
+  schemas-service:
+    url: http://localhost:8084
+
+
