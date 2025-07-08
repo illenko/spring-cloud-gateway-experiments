@@ -15,14 +15,13 @@ class SignatureFilter :
     override fun filter(
         exchange: ServerWebExchange,
         chain: GatewayFilterChain,
-    ): Mono<Void> {
+    ): Mono<Void> =
         if (exchange.request.headers["X-Signature"] == null) {
             exchange.response.statusCode = HttpStatus.UNAUTHORIZED
-            return exchange.response.setComplete()
+            exchange.response.setComplete()
+        } else {
+            chain.filter(exchange)
         }
-
-        return chain.filter(exchange)
-    }
 
     override fun getOrder(): Int = Ordered.LOWEST_PRECEDENCE
 }
